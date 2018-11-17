@@ -81,6 +81,10 @@ Resources:
         S3Bucket:
           Fn::ImportValue: !Sub "data-sources-${Stage}:DeploymentBucket"
         S3Key: !Ref S3KeyWriteToS3Consumer
+      Environment:
+        Variables:
+          DESTINATION_S3_BUCKET:
+            Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucket"
       Tags:
       - Key: context
         Value: consumer

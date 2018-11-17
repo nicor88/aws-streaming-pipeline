@@ -1,11 +1,18 @@
 import base64
+import datetime
 import logging
 import json
+import uuid
+import os
+
+import boto3
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 logger.info('Loading function')
+
+s3 = boto3.client('s3')
 
 
 def read_and_validate(record):
@@ -21,14 +28,28 @@ def read_records(records):
     return records_acc
 
 
-def json_lines_stream(records):
-    return []
+def build_path(base_path, extension='json'):
+    current_date = str(datetime.datetime.utcnow().date())
+    formatted_timestamp = datetime.datetime.utcnow().strftime('%Y_%m_%d_%H')
+    batch_id = str(uuid.uuid4())
+    path = f'context={base_path}/date={current_date}/{formatted_timestamp}_{batch_id}.{extension}'
+    return path
+
+
+def write_to_s3(records):
+    bucket = os.environ['DESTINATION_S3_BUCKET']
+    s3_key = build_path('writ_to_s3', 'json')
+    to_write = json.dumps(records)
+    response = s3.put_object(Bucket=bucket,
+                             Key=s3_key,
+                             Body=to_write.encode())
+    return response
 
 
 def lambda_handler(event, context):
     logger.info(event)
-    output = {'output': 'hello world'}
     records = event.get('Records')
     valid_records = read_records(records)
-    logger.info(f'{len(list(valid_records))} records were read correctly')
-    return output
+    response = write_to_s3(valid_records)
+    logger.info(response)
+    return {'output': 'records were written successfully'}
