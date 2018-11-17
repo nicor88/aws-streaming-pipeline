@@ -13,12 +13,17 @@ install:
   - for i in consumers/*/; do pip install -r $i"requirements.txt"; done
 
 script:
-  # run tests
   - py.test -vv -r sxX
 
 before_deploy:
   - pip install awscli
   - pip install boto3
+
+deploy:
+  - provider: script
+    script: bash scripts/deploy_stream_stack_travis.sh
+    on:
+      all_branches: true
 
 notifications:
   email: true
