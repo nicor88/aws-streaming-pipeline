@@ -110,3 +110,44 @@ Resources:
       Enabled: true
       BatchSize: 1000
       StartingPosition: LATEST
+
+  IngressFirehose:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub "${ProjectName}-${Stage}-ingress-delivery-stream"
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN:
+          Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketARN"
+        BufferingHints:
+          IntervalInSeconds: 300
+          SizeInMBs: 5
+        CompressionFormat: "UNCOMPRESSED"
+        Prefix: "context=firehose_delivery/"
+        RoleARN: !GetAtt IngressFirehoseRole.Arn
+
+  IngressFirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Principal:
+              Service:
+                - firehose.amazonaws.com
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:Put*
+                  - s3:Get*
+                  - s3:List*
+                Resource:
+                  - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketARN"
+                  - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketAllKeysARN"
