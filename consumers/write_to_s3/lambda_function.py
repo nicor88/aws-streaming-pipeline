@@ -38,8 +38,8 @@ def build_path(base_path, extension='json'):
 
 def write_to_s3(records):
     bucket = os.environ['DESTINATION_S3_BUCKET']
-    s3_key = build_path('writ_to_s3', 'json')
-    to_write = json.dumps(records)
+    s3_key = build_path('write_to_s3', 'json')
+    to_write = json.dumps(list(records))
     response = s3.put_object(Bucket=bucket,
                              Key=s3_key,
                              Body=to_write.encode())
