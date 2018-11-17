@@ -33,14 +33,20 @@ Resources:
         Value: !Ref Stage
 
 Outputs:
-  DeploymentBucketARN:
+  DeploymentBucket:
     Description: S3 deployment bucket
-    Value: !GetAtt DeploymentBucket.Arn
+    Value: !Ref DeploymentBucket
     Export:
       Name: !Join [ ":", [ !Ref "AWS::StackName", DeploymentBucket ] ]
 
+  DeploymentBucketARN:
+    Description: S3 deployment bucket ARN
+    Value: !GetAtt DeploymentBucket.Arn
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", DeploymentBucketARN ] ]
+
   DeploymentBucketAllKeysARN:
-    Description: S3 deployment bucket
+    Description: S3 deployment bucket ARN for all keys
     Value:
       Fn::Join:
       - ""
@@ -48,7 +54,7 @@ Outputs:
         - Ref: "AWS::Region"
         - ":"
         - Ref: "AWS::AccountId"
-        - ":stream/"
+        - ":"
         - Ref: "DeploymentBucket"
         - "/*"
     Export:
