@@ -47,9 +47,9 @@ Resources:
             - logs:*
             Resource: arn:aws:logs:*:*:*
           - Effect: Allow
-              Action:
-              - kinesis:*
-              Resource: *
+            Action:
+            - kinesis:*
+            Resource: *
 
   WriteToS3Consumer:
     Type: AWS::Lambda::Function
