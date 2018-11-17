@@ -50,11 +50,7 @@ Outputs:
     Value:
       Fn::Join:
       - ""
-      - - "arn:aws:s3:"
-        - Ref: "AWS::Region"
-        - ":"
-        - Ref: "AWS::AccountId"
-        - ":"
+      - - "arn:aws:s3:::"
         - Ref: "DeploymentBucket"
         - "/*"
     Export:
@@ -77,11 +73,7 @@ Outputs:
     Value:
       Fn::Join:
       - ""
-      - - "arn:aws:s3:"
-        - Ref: "AWS::Region"
-        - ":"
-        - Ref: "AWS::AccountId"
-        - ":"
+      - - "arn:aws:s3:::"
         - Ref: "OutputBucket"
         - "/*"
     Export:
