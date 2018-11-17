@@ -11,6 +11,10 @@ aws s3 cp init.zip s3://streaming-pipeline-dev-deployment/consumers/
 aws s3 cp consumers/init_consumer/init.zip s3://streaming-pipeline-dev-deployment/consumers/ 
  
 ## Producer
+It's possible to send some samples records just calling:
+<pre>
+python producer/producer.py
+</pre>
 
 ## Consumers
 
