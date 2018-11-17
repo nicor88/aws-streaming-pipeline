@@ -21,11 +21,14 @@ def read_records(records):
     return records_acc
 
 
+def json_lines_stream(records):
+    return []
+
+
 def lambda_handler(event, context):
     logger.info(event)
     output = {'output': 'hello world'}
     records = event.get('Records')
     valid_records = read_records(records)
     logger.info(f'{len(list(valid_records))} records were read correctly')
-    # TODO write records to S3
     return output
