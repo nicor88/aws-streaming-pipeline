@@ -26,6 +26,6 @@ def lambda_handler(event, context):
     output = {'output': 'hello world'}
     records = event.get('Records')
     valid_records = read_records(records)
-    logger.info(f'Read {list(valid_records)}')
+    logger.info(f'{len(list(valid_records))} records were read correctly')
     # TODO write records to S3
     return output
