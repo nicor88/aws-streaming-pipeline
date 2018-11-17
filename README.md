@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/nicor88/aws-streaming-pipeline.svg?branch=master)](https://travis-ci.org/nicor88/aws-streaming-pipeline)
+
 # aws-streaming-pipeline
 
 ## Infrastructure
