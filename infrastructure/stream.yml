@@ -58,14 +58,14 @@ Resources:
                   - Ref: "AWS::AccountId"
                   - ":stream/"
                   - Ref: "IngressStream"
-          - Effect: Allow
-            Action:
-            - s3:Get*
-            - s3:List*
-            - s3:Put*
-            Resource:
-              - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketARN"
-              - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketAllKeysARN"
+#          - Effect: Allow
+#            Action:
+#            - s3:Get*
+#            - s3:List*
+#            - s3:Put*
+#            Resource:
+#              - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketARN"
+#              - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketAllKeysARN"
 
   WriteToS3Consumer:
     Type: AWS::Lambda::Function
