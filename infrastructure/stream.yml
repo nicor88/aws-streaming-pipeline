@@ -49,7 +49,7 @@ Resources:
           - Effect: Allow
             Action:
             - kinesis:*
-            Resource: *
+            Resource: arn:aws:kinesis:*:*:*
 
   WriteToS3Consumer:
     Type: AWS::Lambda::Function
