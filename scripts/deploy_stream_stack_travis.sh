@@ -4,14 +4,14 @@ set -e
 STAGE="dev"
 STACK_NAME="stream-$STAGE"
 TEMPLATE_URL="file://infrastructure/stream.yml"
-UUID=$(openssl rand -base64 10)
+UUID=$TRAVIS_COMMIT
 S3_DEPLOYMENT_BUCKET="s3://streaming-pipeline-$STAGE-deployment"
 BASE_CONSUMER_PATH=consumers
 BASE_S3_KEY=$BASE_CONSUMER_PATH/$UUID
 BASE_S3_PATH=$S3_DEPLOYMENT_BUCKET/$BASE_S3_KEY
 
-CONSUMERS=(write_to_s3)
-for i in $CONSUMERS; do
+CONSUMERS=(write_to_s3 send_to_firehose)
+for i in ${CONSUMERS[*]}; do
 	echo "Building $i";
 	CONSUMER_NAME=$i
 	CONSUMER_PATH=$BASE_CONSUMER_PATH/$CONSUMER_NAME
@@ -31,7 +31,7 @@ for i in $CONSUMERS; do
 done
 
 WRITE_TO_S3_DEPLOYMENT_KEY=$BASE_S3_KEY/${CONSUMERS[0]}.zip
-echo $WRITE_TO_S3_DEPLOYMENT_KEY
+SEND_TO_FIREHOSE_KEY=$BASE_S3_KEY/${CONSUMERS[1]}.zip
 
 # update cfn stack
 echo 'Checking template validity'
@@ -39,7 +39,8 @@ aws cloudformation validate-template --template-body $TEMPLATE_URL
 
 echo 'Template valid, creating stack'
 aws cloudformation update-stack --stack-name $STACK_NAME --template-body $TEMPLATE_URL --capabilities CAPABILITY_IAM \
-	--parameters ParameterKey=Stage,ParameterValue=$STAGE ParameterKey=S3KeyWriteToS3Consumer,ParameterValue=$WRITE_TO_S3_DEPLOYMENT_KEY
+	--parameters ParameterKey=Stage,ParameterValue=$STAGE ParameterKey=S3KeyWriteToS3Consumer,ParameterValue=$WRITE_TO_S3_DEPLOYMENT_KEY \
+		ParameterKey=S3KeySendToFirehoseConsumer,ParameterValue=$SEND_TO_FIREHOSE_KEY
 
 echo 'Waiting until stack create completes'
 aws cloudformation wait stack-update-complete --stack-name $STACK_NAME

@@ -5,11 +5,16 @@ Parameters:
   ProjectName:
     Type: String
     Default: streaming-pipeline
+
   Stage:
     Type: String
     Default: dev
 
   S3KeyWriteToS3Consumer:
+    Type: String
+    Default: consumers/init.zip
+
+  S3KeySendToFirehoseConsumer:
     Type: String
     Default: consumers/init.zip
 
@@ -76,7 +81,7 @@ Resources:
       Role: !GetAtt WriteToS3ConsumerExecutionRole.Arn
       Runtime: python3.6
       MemorySize: 128
-      Timeout: 30
+      Timeout: 120 # max 2 minutes should be enough
       Code:
         S3Bucket:
           Fn::ImportValue: !Sub "data-sources-${Stage}:DeploymentBucket"
@@ -151,3 +156,94 @@ Resources:
                 Resource:
                   - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketARN"
                   - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketAllKeysARN"
+
+  SendToFirehoseConsumerExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:*
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action:
+            - kinesis:*
+            Resource:
+              - Fn::Join:
+                - ""
+                - - "arn:aws:kinesis:"
+                  - Ref: "AWS::Region"
+                  - ":"
+                  - Ref: "AWS::AccountId"
+                  - ":stream/"
+                  - Ref: "IngressStream"
+          - Effect: Allow
+            Action:
+            - s3:Get*
+            - s3:List*
+            - s3:Put*
+            Resource:
+              - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketARN"
+              - Fn::ImportValue: !Sub "data-sources-${Stage}:OutputBucketAllKeysARN"
+          - Effect: Allow
+            Action:
+            - firehose:PutRecord*
+            Resource:
+            - !GetAtt IngressFirehose.Arn
+
+  SendToFirehoseConsumer:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-send-to-firehose-${Stage}"
+      Handler: lambda_function.lambda_handler
+      Description: Kinesis consumer to send events to Firehose
+      Role: !GetAtt SendToFirehoseConsumerExecutionRole.Arn
+      Runtime: python3.6
+      MemorySize: 128
+      Timeout: 30
+      Code:
+        S3Bucket:
+          Fn::ImportValue: !Sub "data-sources-${Stage}:DeploymentBucket"
+        S3Key: !Ref S3KeySendToFirehoseConsumer
+      Environment:
+        Variables:
+          FIREHOSE_DELIVERY_STREAM: !Ref IngressFirehose
+      Tags:
+      - Key: context
+        Value: consumer
+      - Key: stage
+        Value: !Ref Stage
+
+  SendToFirehoseConsumerTrigger:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn:
+        Fn::Join:
+        - ""
+        - - "arn:aws:kinesis:"
+          - Ref: "AWS::Region"
+          - ":"
+          - Ref: "AWS::AccountId"
+          - ":stream/"
+          - Ref: "IngressStream"
+      FunctionName:
+        Fn::GetAtt:
+        - "SendToFirehoseConsumer"
+        - "Arn"
+      Enabled: true
+      BatchSize: 1000
+      StartingPosition: LATEST
