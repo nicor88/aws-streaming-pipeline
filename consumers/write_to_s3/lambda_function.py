@@ -7,6 +7,7 @@ logger.info('Loading function')
 
 
 def read_records():
+    return []
 
 
 def lambda_handler(event, context):
