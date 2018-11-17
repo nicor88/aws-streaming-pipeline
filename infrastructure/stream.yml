@@ -58,12 +58,6 @@ Resources:
                   - Ref: "AWS::AccountId"
                   - ":stream/"
                   - Ref: "IngressStream"
-          - Effect: Allow
-            Action:
-            - s3:*
-            Resource:
-              - Fn::ImportValue: !Sub "data-sources-${Stage}:DeploymentBucket"
-              - Fn::ImportValue: !Sub "data-sources-${Stage}:DeploymentBucket/*"
 
   WriteToS3Consumer:
     Type: AWS::Lambda::Function

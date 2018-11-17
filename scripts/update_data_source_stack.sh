@@ -1,9 +1,10 @@
 #!/bin/sh
 set -e
 
-STACK_NAME="data-sources"
-TEMPLATE_URL="file://infrastructure/data-sources.yml"
 STAGE="dev"
+STACK_NAME="data-sources-$STAGE"
+TEMPLATE_URL="file://infrastructure/data-sources.yml"
+
 
 echo 'Checking template validity'
 aws cloudformation validate-template --template-body $TEMPLATE_URL
