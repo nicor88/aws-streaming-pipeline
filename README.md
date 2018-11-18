@@ -29,6 +29,9 @@ The infrastructure is provisioned using Cloudformation. It is split in 2 mains s
 	* Firehose Delivery Stream, configured to deliver to S3
 	* Firehose Delivery Stream Execution Role, necessary to put object to S3
 
+### Architecture
+![alt text](docs/aws-steaming-pipeline "Architecture")
+
 ### Init the infrastructure
 * First create the `data-sources` stack
 	<pre>
@@ -89,3 +92,5 @@ To test that, we can easily create an Athen Table using the DDL inside the folde
 	This can be achive setting up a Cloudwatch alarm that trigger the lambda when a specific limit is reached. 
 	The lambda then calculates the shards number based on the latest incoming bytes
 * Add Alarms to monitor when the invocations of the lambda functions fails
+* Adding a JSON schema validation process in the lambdas will guarantee to have more quality in the received records.
+	This is event more valid when implementing a consumer that write to a DB, that generally is much less flexible then S3
