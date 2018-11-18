@@ -77,15 +77,16 @@ At each push to a remote branch Travis is triggered. It will take care of:
 
 
 ## Considerations
-2 consumers for Kinesis stream were created. Write to S3 consumer receive the records and write them as JSON to S3.
+The records in Kinesis are consumed by 2 lambda functions.
+The `write_to_s3` lambda receive the records and write them as JSON to S3, creating a unique path each time that a nex batch is received.
 The file written by such consumer can be really small, the size can be even smaller when adding more shards.
-This is due to the fact that the lambda is invoked many time, with a limited amount of events.
+This is due to the fact that the lambda is invoked many times with a limited amount of events.
 The produced files are hard to read with applications like Spark/Presto/Athena, because they will create a not needed network overhead.
 To solve this problem we can easily create a consumer that send the record to Firehose, then firehose will take care of
-writing the file to S3, when specific conditions are reached, for example in this implementations
-the files saved written to S3 with a max size of 5MB. In this specific implementation, each JSON is one line of the file.
-Such format, called JSONlines will make the file easier to be read by Spark/Presto/Athena.
-To test that, we can easily create an Athen Table using the DDL inside the folder `Athena`.
+writing the file to S3 only when specific conditions are reached, for example in this implementations
+the files saved written to S3 with a max size of 5MB. We also implemented a JSONlines structure 
+to make the file easier to read for Spark/Presto/Athena.
+To test that, it's possible to create an Athena table, DDL are in `athena/taxi_trajectories.sql`.
 
 ### Improvements
 * It's possible to add a Lambda function that autoscale the number of Kinesis shards to support spikes of Incoming Bytes.
