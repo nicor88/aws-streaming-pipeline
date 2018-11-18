@@ -34,9 +34,7 @@ The infrastructure is provisioned using Cloudformation. It is split in 2 mains s
 
 ### Init the infrastructure
 * First create the `data-sources` stack
-	<pre>
-	bash scripts/create_data_source_stack.sh
-	</pre>
+	<pre>bash scripts/create_data_source_stack.sh</pre>
 
 * Create a zipped file to init the lambda functions, and upload to S3
 	<pre>
@@ -51,6 +49,10 @@ The infrastructure is provisioned using Cloudformation. It is split in 2 mains s
 	**NOTE**: if the S3 key consumers/init.zip is not uploaded in the S3 Bucket used for the deployments, the stack creation will fail
 
 All the stack and resources contains a stage parameter, to handle multiple stages (e.g. production)
+
+### Consumers
+The consumers implementation is located in the `consumers` folder.
+We have one folder for each consumer, plus one folder used to init the consumer on first Cloudformation stack creation.
 
 ### Producer
 In order to test the proposed solution, we needed to implement a producer, that put the records to the stream.
