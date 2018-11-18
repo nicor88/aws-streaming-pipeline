@@ -53,8 +53,8 @@ All the stack and resources contains a stage parameters, to simplify the creatio
 
 ### Producer
 In order to test the proposed solution, we needed to implement a producer, that put the records to the stream.
-The producer use a sample csv from a []Kaggle competition](https://www.kaggle.com/c/pkdd-15-predict-taxi-service-trajectory-i/data)
-It's possible to the sample records, just calling:
+The producer use a sample csv from a [Kaggle competition](https://www.kaggle.com/c/pkdd-15-predict-taxi-service-trajectory-i/data)
+It's possible to the send sample records, just calling:
 <pre>
 python producer/producer.py
 </pre>

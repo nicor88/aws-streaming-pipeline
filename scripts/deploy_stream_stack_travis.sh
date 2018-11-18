@@ -37,12 +37,12 @@ SEND_TO_FIREHOSE_KEY=$BASE_S3_KEY/${CONSUMERS[1]}.zip
 echo 'Checking template validity'
 aws cloudformation validate-template --template-body $TEMPLATE_URL
 
-echo 'Template valid, creating stack'
+echo 'Template valid, updating stack'
 aws cloudformation update-stack --stack-name $STACK_NAME --template-body $TEMPLATE_URL --capabilities CAPABILITY_IAM \
 	--parameters ParameterKey=Stage,ParameterValue=$STAGE ParameterKey=S3KeyWriteToS3Consumer,ParameterValue=$WRITE_TO_S3_DEPLOYMENT_KEY \
 		ParameterKey=S3KeySendToFirehoseConsumer,ParameterValue=$SEND_TO_FIREHOSE_KEY
 
-echo 'Waiting until stack create completes'
+echo 'Waiting until stack update completes'
 aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
 
-echo 'Stack created successfully'
+echo 'Stack updated successfully'

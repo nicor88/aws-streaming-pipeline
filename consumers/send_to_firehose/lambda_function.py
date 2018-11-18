@@ -17,7 +17,7 @@ firehose = boto3.client('firehose')
 def read_record(record):
     """
     Read Kinesis record as Python dictonary
-    :param record:  dict, Kinesis record
+    :param record: dict, Kinesis record
     :return:
         dict
     """
@@ -41,6 +41,12 @@ def read_records(kinesis_stream):
 
 
 def send_record(record):
+    """
+    Send a record to Firehose, after adding a line separator
+    :param record: dict
+    :return:
+        boto3 response from put records call to firehose
+    """
     firehose_delivery_stream = os.environ['FIREHOSE_DELIVERY_STREAM']
     record_with_separator = str(record) + '\n'
     record_for_firehose = {'Data': record_with_separator.encode()}

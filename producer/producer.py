@@ -40,7 +40,7 @@ def send_record(record):
 
 async def async_sender(records):
     """
-    Send records in an asynchronous to speed up the sending process
+    Send records in an asynchronous way to speed up the sending process
     :param records: list of dictionaries
     :return:
         list, responses of the sending process
