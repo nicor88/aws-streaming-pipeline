@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Stack containing all data sources resources, like S3 Buckets
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: streaming-pipeline
+  Stage:
+    Type: String
+    Default: dev
+
+Resources:
+  DeploymentBucket:
+    Type: AWS::S3::Bucket
+    #DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "${ProjectName}-${Stage}-deployment"
+      Tags:
+        - Key: context
+          Value: deployment
+        - Key: stage
+          Value: !Ref Stage
+
+  OutputBucket:
+    Type: AWS::S3::Bucket
+    #DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "${ProjectName}-${Stage}-output"
+      Tags:
+      - Key: context
+        Value: output
+      - Key: stage
+        Value: !Ref Stage
+
+Outputs:
+  DeploymentBucket:
+    Description: S3 deployment bucket
+    Value: !Ref DeploymentBucket
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", DeploymentBucket ] ]
+
+  DeploymentBucketARN:
+    Description: S3 deployment bucket ARN
+    Value: !GetAtt DeploymentBucket.Arn
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", DeploymentBucketARN ] ]
+
+  DeploymentBucketAllKeysARN:
+    Description: S3 deployment bucket ARN for all keys
+    Value:
+      Fn::Join:
+      - ""
+      - - "arn:aws:s3:::"
+        - Ref: "DeploymentBucket"
+        - "/*"
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", DeploymentBucketAllKeysARN ] ]
+
+  OutputBucket:
+    Description: S3 output bucket
+    Value: !Ref OutputBucket
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", OutputBucket ] ]
+
+  OutputBucketARN:
+    Description: S3 deployment bucket ARN
+    Value: !GetAtt OutputBucket.Arn
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", OutputBucketARN ] ]
+
+  OutputBucketAllKeysARN:
+    Description: S3 deployment bucket ARN for all keys
+    Value:
+      Fn::Join:
+      - ""
+      - - "arn:aws:s3:::"
+        - Ref: "OutputBucket"
+        - "/*"
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", OutputBucketAllKeysARN ] ]
