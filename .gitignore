@@ -75,3 +75,4 @@ node_modules/
 
 # exclude all folder used for building locally
 .build
+*.zip

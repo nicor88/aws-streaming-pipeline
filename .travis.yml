@@ -9,8 +9,7 @@ env:
     - PYTHONPATH=$TRAVIS_BUILD_DIR:$PYTHONPATH
 
 install:
-  - pip install cfn-lint==0.3.2
-  - pip install pytest
+  - pip install -r requirements.txt
   - for i in consumers/*/; do pip install -r $i"requirements.txt"; done
 
 script:
