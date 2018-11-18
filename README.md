@@ -73,6 +73,10 @@ At each push to a remote branch Travis is triggered. It will take care of:
 
 **NOTE**: it's possible to have a production stack, that is deployed only when merging a PR in the master branch
 
+It's also possible to manually update the stream stack locally simply running:
+<pre>bash scripts/deploy_stream_stack_locally.sh </pre>
+To run the script you need to have Docker. The script will use a Docker image to packaged the lambdas.
+There are some python libs (e.g. pandas) that need to be installed in a Linux environment to have them working inside the Lambda environment.
 
 ## Considerations
 The records in Kinesis are consumed by 2 lambda functions.
