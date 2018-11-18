@@ -1,11 +1,13 @@
 import consumers.write_to_s3.lambda_function as consumer
 
 import pytest
+from unittest.mock import Mock
 
 
 @pytest.fixture(autouse=True)
 def setup_env(monkeypatch):
     monkeypatch.setenv('STAGE', 'test')
+    monkeypatch.setenv('DESTINATION_S3_BUCKET', 'test_bucket')
 
 
 @pytest.fixture
@@ -47,5 +49,28 @@ def kinesis_records():
     return kinesis_records
 
 
-def test_consumer():
-    assert True
+def test_read_record(kinesis_records):
+    record = kinesis_records['Records'][0]
+    decoded_record = consumer.read_record(record)
+    assert isinstance(decoded_record, dict)
+    assert 'event_id' in decoded_record.keys()
+
+
+def test_read_records(kinesis_records):
+    decoded_records = consumer.read_records(kinesis_records)
+    assert len(list(decoded_records)) == 2
+
+
+def test_read_records_with_empty_input():
+    decoded_records = consumer.read_records({})
+    assert decoded_records == []
+
+
+def test_lambda_function(monkeypatch, kinesis_records):
+    mock_s3_client = Mock()
+    monkeypatch.setattr('consumers.write_to_s3.lambda_function.s3', mock_s3_client)
+
+    result = consumer.lambda_handler(kinesis_records, None)
+    assert isinstance(result, dict)
+    assert 's3://test_bucket/context=write_to_s3' in result.get('s3_path')
+    assert '.json' in result.get('s3_path')

@@ -28,13 +28,14 @@ def read_record(record):
     return decoded_record
 
 
-def read_records(records):
+def read_records(kinesis_stream):
     """
     Read all the records in sent by Kinesis
-    :param records:
+    :param kinesis_input:
     :return:
         generator of records
     """
+    records = kinesis_stream.get('Records')
     if not records:
         return []
     records_acc = (read_record(record) for record in records)
@@ -61,7 +62,7 @@ def write_to_s3(records):
     Give a generator of records it write them to S3
     :param records: generator of records
     :return:
-        dict, answer from boto3 put operation
+        dict, the s3 path were the events were written
     """
     bucket = os.environ['DESTINATION_S3_BUCKET']
     s3_key = build_path('write_to_s3', 'json')
@@ -69,13 +70,13 @@ def write_to_s3(records):
     response = s3.put_object(Bucket=bucket,
                              Key=s3_key,
                              Body=to_write.encode())
-    return response
+    logger.info(response)
+    s3_path = f's3://{bucket}/{s3_key}'
+    return s3_path
 
 
 def lambda_handler(event, context):
     logger.info(event)
-    records = event.get('Records')
-    valid_records = read_records(records)
-    response = write_to_s3(valid_records)
-    logger.info(response)
-    return {'output': 'records were written successfully'}
+    records = read_records(event)
+    s3_path = write_to_s3(records)
+    return {'s3_path': s3_path}
