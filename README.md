@@ -30,7 +30,7 @@ The infrastructure is provisioned using Cloudformation. It is split in 2 mains s
 	* Firehose Delivery Stream Execution Role, necessary to put object to S3
 
 ### Architecture
-![alt text](docs/aws-steaming-pipeline "Architecture")
+![alt text](docs/aws-streaming-pipeline "Architecture")
 
 ### Init the infrastructure
 * First create the `data-sources` stack
