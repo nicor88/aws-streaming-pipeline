@@ -23,7 +23,8 @@ def read_record(record):
         dict
     """
     decoded_record = json.loads(base64.b64decode(record['kinesis']['data']).decode())
-    decoded_record['sequenceNumber'] = record['kinesis']['sequenceNumber']
+    # add
+    decoded_record['event_id'] = record['kinesis']['sequenceNumber']
     return decoded_record
 
 
