@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-STAGE="dev"
+STAGE=$1
 STACK_NAME="stream-$STAGE"
 TEMPLATE_URL="file://infrastructure/stream.yml"
 UUID=$TRAVIS_COMMIT

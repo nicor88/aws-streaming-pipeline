@@ -21,7 +21,7 @@ before_deploy:
 
 deploy:
   - provider: script
-    script: bash scripts/deploy_stream_stack_travis.sh
+    script: bash scripts/deploy_stream_stack_travis.sh dev
     on:
       all_branches: true
 

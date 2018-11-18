@@ -50,7 +50,7 @@ The infrastructure is provisioned using Cloudformation. It is split in 2 mains s
 	**NOTE**: if the S3 key consumers/init.zip is not uploaded in the S3 Bucket used for deployment, the stack creation will fail
 
 All the stack and resources contains a stage parameters, to simplify the creation of the stacks for multiple stages.
- 
+
 ### Producer
 In order to test the proposed solution, we needed to implement a producer, that put the records to the stream.
 The producer use a sample csv from a []Kaggle competition](https://www.kaggle.com/c/pkdd-15-predict-taxi-service-trajectory-i/data)
@@ -65,12 +65,15 @@ pytest -vv tests/*
 </pre>
 
 ## CI/CD
-At each push Travis is triggered. It will take care of:
+At each push to a remote branch Travis is triggered. It will take care of:
 * running the unit tests
 * preparing the zipped lambda function(containing all needed requirements)
-* update the stream stack with the update version of the lambdas
+* update the stream stack with the latest build code for the lambdas
 
-## Improvements and Considerations
+**NOTE**: it's possible to have a production stack, that is deployed only when merging a PR in the master branch
+
+
+## Considerations
 2 consumers for Kinesis stream were created. Write to S3 consumer receive the records and write them as JSON to S3.
 The file written by such consumer can be really small, the size can be even smaller when adding more shards.
 This is due to the fact that the lambda is invoked many time, with a limited amount of events.
@@ -80,3 +83,9 @@ writing the file to S3, when specific conditions are reached, for example in thi
 the files saved written to S3 with a max size of 5MB. In this specific implementation, each JSON is one line of the file.
 Such format, called JSONlines will make the file easier to be read by Spark/Presto/Athena.
 To test that, we can easily create an Athen Table using the DDL inside the folder `Athena`.
+
+### Improvements
+* It's possible to add a Lambda function that autoscale the number of Kinesis shards to support spikes of Incoming Bytes.
+	This can be achive setting up a Cloudwatch alarm that trigger the lambda when a specific limit is reached. 
+	The lambda then calculates the shards number based on the latest incoming bytes
+* Add Alarms to monitor when the invocations of the lambda functions fails
