@@ -31,7 +31,7 @@ def read_record(record):
 def read_records(kinesis_stream):
     """
     Read all the records in sent by Kinesis
-    :param kinesis_input:
+    :param kinesis_stream: dict, input coming from kinesis stream
     :return:
         generator of records
     """

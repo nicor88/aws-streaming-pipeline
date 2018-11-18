@@ -26,13 +26,14 @@ def read_record(record):
     return decoded_record
 
 
-def read_records(records):
+def read_records(kinesis_stream):
     """
     Read all the records in sent by Kinesis
-    :param records:
+    :param kinesis_stream: dict, input coming from kinesis stream
     :return:
         generator of records
     """
+    records = kinesis_stream.get('Records')
     if not records:
         return []
     records_acc = (read_record(record) for record in records)
@@ -66,11 +67,13 @@ async def async_sender(records):
 
 def lambda_handler(event, context):
     logger.info(event)
-    records = event.get('Records')
-    valid_records = read_records(records)
+
+    records = read_records(event)
     loop = asyncio.get_event_loop()
     results = loop.run_until_complete(
-        async_sender(records=valid_records)
+        async_sender(records=records)
     )
     success_sending = (res for res in results if res['ResponseMetadata']['HTTPStatusCode'] == 200)
-    logger.info(f'{len(list(success_sending))} records were sent successfully')
+    result = f'{len(list(success_sending))} records were sent successfully'
+    logger.info(result)
+    return {'result': result}
