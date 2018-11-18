@@ -47,12 +47,10 @@ The infrastructure is provisioned using Cloudformation. It is split in 2 mains s
 	</pre>
 	
 * Create the `stream` stack
-	<pre>
-	bash scripts/create_stream_stack.sh
-	</pre>
-	**NOTE**: if the S3 key consumers/init.zip is not uploaded in the S3 Bucket used for deployment, the stack creation will fail
+	<pre>bash scripts/create_stream_stack.sh</pre>
+	**NOTE**: if the S3 key consumers/init.zip is not uploaded in the S3 Bucket used for the deployments, the stack creation will fail
 
-All the stack and resources contains a stage parameters, to simplify the creation of the stacks for multiple stages.
+All the stack and resources contains a stage parameter, to handle multiple stages (e.g. production)
 
 ### Producer
 In order to test the proposed solution, we needed to implement a producer, that put the records to the stream.
