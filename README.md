@@ -6,6 +6,7 @@
 * python3.6
 * pip
 * Docker
+* [awscli](https://aws.amazon.com/cli/)
 
 ### Development
 Install the libs running:
