@@ -19,11 +19,11 @@ before_deploy:
   - pip install awscli
   - pip install boto3
 
-deploy:
-  - provider: script
-    script: bash scripts/deploy_stream_stack_travis.sh dev
-    on:
-      all_branches: true
+#deploy:
+#  - provider: script
+#    script: bash scripts/deploy_stream_stack_travis.sh dev
+#    on:
+#      all_branches: true
 
 notifications:
   email: true
